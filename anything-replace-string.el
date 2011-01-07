@@ -85,7 +85,7 @@
   (push (concat from-string anything-replace-string-separator to-string) anything-replace-string-history-candidates))
 
 (defvar anything-c-source-replace-string
-  '((name . "Replace string history")
+  '((name . "Replace string from history")
     (candidates . anything-replace-string-history-candidates)
     (action
      ("Replace String" . (lambda (candidate)
@@ -125,8 +125,7 @@
                        (replace-match (cdr x) nil t))))
         (goto-char (point-min))
         (while (search-forward (car x) nil t)
-          (replace-match (cdr x) nil t))
-        ))
+          (replace-match (cdr x) nil t))))
     (setq mark-active nil)))
 
 (defun anything-replace-string()
