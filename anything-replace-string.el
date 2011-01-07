@@ -92,8 +92,7 @@
                                         (progn
                                           (anything-replace-string-region x)
                                           (setq match t)
-                                          (return nil)
-                                          ))))))
+                                          (return nil)))))))
     (migemo)
     (multiline)))
 
@@ -107,8 +106,7 @@
                                (setq prompt "Replace string "))
                              (setq to-string (read-string (concat prompt candidate " with: ")))
                              (anything-replace-string-region (cons candidate to-string))
-                             (anything-replace-string-push-history candidate to-string)
-                             ))))))
+                             (anything-replace-string-push-history candidate to-string)))))))
 
 (defun anything-replace-string-region (x)
   "Replace string."
@@ -121,8 +119,7 @@
               (incf count)
               (replace-match (cdr x) nil t)
               (unless (< end (point))
-                (setq current (point)))
-              )))
+                (setq current (point))))))
       (goto-char (point-min))
       (while (search-forward (car x) nil t)
         (incf count)
