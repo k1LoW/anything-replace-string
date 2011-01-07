@@ -52,7 +52,7 @@
 (require 'anything)
 
 (defgroup anything-replace-string nil
-  "replae-string history `anything.el' interface"
+  "replae-string() `anything.el' interface"
   :group 'lisp
   :prefix "anything-replace-string-")
 
