@@ -17,7 +17,7 @@
 ;; along with this program; if not, write to the Free Software
 ;; Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
-;; Version: 0.2.1
+;; Version: 0.5.0
 ;; Author: k1LoW (Kenichirou Oyama), <k1lowxb [at] gmail [dot] com> <k1low [at] 101000lab [dot] org>
 ;; URL: http://code.101000lab.org
 
@@ -45,10 +45,6 @@
 ;;  `anything-replace-string-separator'
 ;;    Replace string pair separator
 ;;    default = " -> "
-
-;;; TODO:
-;; point move
-;; replacement count
 
 ;;; Code:
 
@@ -112,20 +108,28 @@
                              (setq to-string (read-string (concat prompt candidate " with: ")))
                              (anything-replace-string-region (cons candidate to-string))
                              (anything-replace-string-push-history candidate to-string)
-                           ))))))
+                             ))))))
 
 (defun anything-replace-string-region (x)
   "Replace string."
-  (let ((beginning (region-beginning)) (end (region-end)))
-    (save-excursion
-      (if (region-active-p)
-          (progn (goto-char beginning)
-                 (while (search-forward (car x) nil t)
-                   (if (>= end (point))
-                       (replace-match (cdr x) nil t))))
-        (goto-char (point-min))
-        (while (search-forward (car x) nil t)
-          (replace-match (cdr x) nil t))))
+  (let ((count 0) (current (point)) (beginning (region-beginning)) (end (region-end)))
+    (if (region-active-p)
+        (progn
+          (goto-char beginning)
+          (while (search-forward (car x) nil t)
+            (unless (< end (point))
+              (incf count)
+              (replace-match (cdr x) nil t)
+              (unless (< end (point))
+                (setq current (point)))
+              )))
+      (goto-char (point-min))
+      (while (search-forward (car x) nil t)
+        (incf count)
+        (replace-match (cdr x) nil t)
+        (setq current (point))))
+    (goto-char current)
+    (message (concat "Replaced " (number-to-string count) " occurrences"))
     (setq mark-active nil)))
 
 (defun anything-replace-string()
