@@ -17,7 +17,7 @@
 ;; along with this program; if not, write to the Free Software
 ;; Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
-;; Version: 0.1.1
+;; Version: 0.2.0
 ;; Author: k1LoW (Kenichirou Oyama), <k1lowxb [at] gmail [dot] com> <k1low [at] 101000lab [dot] org>
 ;; URL: http://code.101000lab.org
 
@@ -45,9 +45,6 @@
 ;;  `anything-replace-string-separator'
 ;;    Replace string pair separator
 ;;    default = " -> "
-
-;;; TODO:
-;; replace-string interface (with dummy)
 
 ;;; Code:
 
@@ -100,6 +97,19 @@
     (migemo)
     (multiline)))
 
+(defvar anything-c-source-replace-string-dummy
+  '((name . "Replace string")
+    (dummy)
+    (action
+     ("Replace String" . (lambda (candidate)
+                           (let ((to-string candidate) (prompt "Replace string in region "))
+                             (unless (region-active-p)
+                               (setq prompt "Replace string "))
+                             (setq to-string (read-string (concat prompt candidate " with: ")))
+                             (anything-replace-string-region (cons candidate to-string))
+                             (anything-replace-string-push-history candidate to-string)
+                           ))))))
+
 (defun anything-replace-string-region (x)
   "Replace string."
   (let ((beginning (region-beginning)) (end (region-end)))
@@ -120,7 +130,7 @@
   (let ((prompt "Replace string in region: "))
     (unless (region-active-p)
       (setq prompt "Replace string: "))
-    (anything (list anything-c-source-replace-string) nil prompt nil nil)))
+    (anything (list anything-c-source-replace-string-dummy anything-c-source-replace-string) nil prompt nil nil)))
 
 (provide 'anything-replace-string)
 ;;; anything-replace-string.el ends here
