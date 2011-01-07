@@ -17,7 +17,7 @@
 ;; along with this program; if not, write to the Free Software
 ;; Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
-;; Version: 0.2.0
+;; Version: 0.2.1
 ;; Author: k1LoW (Kenichirou Oyama), <k1lowxb [at] gmail [dot] com> <k1low [at] 101000lab [dot] org>
 ;; URL: http://code.101000lab.org
 
@@ -45,6 +45,10 @@
 ;;  `anything-replace-string-separator'
 ;;    Replace string pair separator
 ;;    default = " -> "
+
+;;; TODO:
+;; point move
+;; replacement count
 
 ;;; Code:
 
@@ -122,7 +126,8 @@
         (goto-char (point-min))
         (while (search-forward (car x) nil t)
           (replace-match (cdr x) nil t))
-        ))))
+        ))
+    (setq mark-active nil)))
 
 (defun anything-replace-string()
   "Replace string from history."
