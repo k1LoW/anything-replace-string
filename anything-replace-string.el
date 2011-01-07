@@ -17,7 +17,7 @@
 ;; along with this program; if not, write to the Free Software
 ;; Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
-;; Version: 0.1.0
+;; Version: 0.1.1
 ;; Author: k1LoW (Kenichirou Oyama), <k1lowxb [at] gmail [dot] com> <k1low [at] 101000lab [dot] org>
 ;; URL: http://code.101000lab.org
 
@@ -101,19 +101,26 @@
     (multiline)))
 
 (defun anything-replace-string-region (x)
-  "Replace string region."
+  "Replace string."
   (let ((beginning (region-beginning)) (end (region-end)))
-  (save-excursion
-    (goto-char beginning)
-    (while (and (region-active-p) (search-forward (car x) nil t))
-      (if (>= end (point))
-       (replace-match (cdr x) nil t)))
-    )))
+    (save-excursion
+      (if (region-active-p)
+          (progn (goto-char beginning)
+                 (while (search-forward (car x) nil t)
+                   (if (>= end (point))
+                       (replace-match (cdr x) nil t))))
+        (goto-char (point-min))
+        (while (search-forward (car x) nil t)
+          (replace-match (cdr x) nil t))
+        ))))
 
 (defun anything-replace-string()
   "Replace string from history."
   (interactive)
-  (anything (list anything-c-source-replace-string) nil "Replace string in region: " nil nil))
+  (let ((prompt "Replace string in region: "))
+    (unless (region-active-p)
+      (setq prompt "Replace string: "))
+    (anything (list anything-c-source-replace-string) nil prompt nil nil)))
 
 (provide 'anything-replace-string)
 ;;; anything-replace-string.el ends here
