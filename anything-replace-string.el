@@ -75,6 +75,9 @@
 (defadvice replace-string (before anything-replace-string-replace-string(from-string to-string &optional delimited start end) activate)
   (anything-replace-string-push-history from-string to-string))
 
+(defadvice query-replace (before anything-replace-string-query-replace(from-string to-string &optional delimited start end) activate)
+  (anything-replace-string-push-history from-string to-string))
+
 (defun anything-replace-string-push-history (from-string to-string)
   "Push replace history."
   (push (cons from-string to-string) anything-replace-string-history)
@@ -84,15 +87,8 @@
   '((name . "Replace string from history")
     (candidates . anything-replace-string-history-candidates)
     (action
-     ("Replace String" . (lambda (candidate)
-                           (loop with match = nil
-                                 until match
-                                 for x in anything-replace-string-history
-                                 do (if (equal (concat (car x) anything-replace-string-separator (cdr x)) candidate)
-                                        (progn
-                                          (anything-replace-string-region x)
-                                          (setq match t)
-                                          (return nil)))))))
+       ("Replace String" . anything-replace-string-action)
+       ("Query Replace" . anything-query-replace-action))
     (migemo)
     (multiline)))
 
@@ -100,13 +96,44 @@
   '((name . "Replace string")
     (dummy)
     (action
-     ("Replace String" . (lambda (candidate)
-                           (let ((to-string candidate) (prompt "Replace string in region "))
-                             (unless (region-active-p)
-                               (setq prompt "Replace string "))
-                             (setq to-string (read-string (concat prompt candidate " with: ")))
-                             (anything-replace-string-region (cons candidate to-string))
-                             (anything-replace-string-push-history candidate to-string)))))))
+     ("Replace String" . anything-replace-string-dummy-action)
+     ("Query Replace" . anything-query-replace-dummy-action))))
+
+(defun anything-replace-string-action (candidate)
+  (loop with match = nil
+        until match
+        for x in anything-replace-string-history
+        do (if (equal (concat (car x) anything-replace-string-separator (cdr x)) candidate)
+               (progn
+                 (anything-replace-string-region x)
+                 (setq match t)
+                 (return nil)))))
+
+(defun anything-query-replace-action (candidate)
+  (loop with match = nil
+        until match
+        for x in anything-replace-string-history
+        do (if (equal (concat (car x) anything-replace-string-separator (cdr x)) candidate)
+               (progn
+                 (anything-query-replace-region x)
+                 (setq match t)
+                 (return nil)))))
+
+(defun anything-replace-string-dummy-action (candidate)
+   (let ((to-string candidate) (prompt "Replace string in region "))
+     (unless (region-active-p)
+       (setq prompt "Replace string "))
+     (setq to-string (read-string (concat prompt candidate " with: ")))
+     (anything-replace-string-region (cons candidate to-string))
+     (anything-replace-string-push-history candidate to-string)))
+
+(defun anything-query-replace-dummy-action (candidate)
+   (let ((to-string candidate) (prompt "Query Replace string in region "))
+     (unless (region-active-p)
+       (setq prompt "Query Replace string "))
+     (setq to-string (read-string (concat prompt candidate " with: ")))
+     (anything-replace-string-push-history candidate to-string)
+     (anything-query-replace-region (cons candidate to-string))))
 
 (defun anything-replace-string-region (x)
   "Replace string."
@@ -128,6 +155,14 @@
     (goto-char current)
     (message (concat "Replaced " (number-to-string count) " occurrences"))
     (setq mark-active nil)))
+
+(defun anything-query-replace-region (x)
+  "Query Replace string."
+  (let((from-string (car x))
+       (to-string (cdr x)))
+    (if (region-active-p)
+        (perform-replace from-string to-string t nil nil nil nil (region-beginning) (region-end))
+      (perform-replace from-string to-string t nil nil))))
 
 (defun anything-replace-string()
   "Replace string from history."
