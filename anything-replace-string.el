@@ -20,7 +20,7 @@
 ;; Version: 0.8.1
 ;; Author: k1LoW (Kenichirou Oyama), <k1lowxb [at] gmail [dot] com> <k1low [at] 101000lab [dot] org>
 ;; Maintainer: k1LoW (Kenichirou Oyama), <k1lowxb [at] gmail [dot] com> <k1low [at] 101000lab [dot] org>
-;;             kitokitoki
+;;             kitokitoki, <mori.dev.asdf [at] gmail [dot] com>
 ;; URL: http://code.101000lab.org
 
 ;;; Install
