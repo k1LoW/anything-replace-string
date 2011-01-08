@@ -83,7 +83,7 @@
   (push (cons from-string to-string) anything-replace-string-history)
   (push (concat from-string anything-replace-string-separator to-string) anything-replace-string-history-candidates))
 
-(setq anything-c-source-replace-string
+(defvar anything-c-source-replace-string
   '((name . "Replace string from history")
     (candidates . anything-replace-string-history-candidates)
     (action
@@ -92,7 +92,7 @@
     (migemo)
     (multiline)))
 
-(setq anything-c-source-replace-string-dummy
+(defvar anything-c-source-replace-string-dummy
   '((name . "Replace string")
     (dummy)
     (action
