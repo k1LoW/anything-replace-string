@@ -132,8 +132,8 @@
      (unless (region-active-p)
        (setq prompt "Query Replace string "))
      (setq to-string (read-string (concat prompt candidate " with: ")))
-     (anything-query-replace-region (cons candidate to-string))
-     (anything-replace-string-push-history candidate to-string)))
+     (anything-replace-string-push-history candidate to-string)
+     (anything-query-replace-region (cons candidate to-string))))
 
 (defun anything-replace-string-region (x)
   "Replace string."
