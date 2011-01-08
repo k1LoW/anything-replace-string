@@ -1,4 +1,4 @@
-;;; anything-replace-string.el --- replace-string() `anything.el' interface
+;;; anything-replace-string.el --- `replace-string' `anything.el' interface
 ;; -*- Mode: Emacs-Lisp -*-
 
 ;; Copyright (C) 2011 by 101000code/101000LAB
@@ -52,7 +52,7 @@
 (require 'anything)
 
 (defgroup anything-replace-string nil
-  "replae-string() `anything.el' interface"
+  "`replae-string' `anything.el' interface"
   :group 'lisp
   :prefix "anything-replace-string-")
 
