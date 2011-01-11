@@ -17,7 +17,7 @@
 ;; along with this program; if not, write to the Free Software
 ;; Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
-;; Version: 0.8.1
+;; Version: 0.8.2
 ;; Author: k1LoW (Kenichirou Oyama), <k1lowxb [at] gmail [dot] com> <k1low [at] 101000lab [dot] org>
 ;; Maintainer: k1LoW (Kenichirou Oyama), <k1lowxb [at] gmail [dot] com> <k1low [at] 101000lab [dot] org>
 ;;             kitokitoki, <mori.dev.asdf [at] gmail [dot] com>
@@ -166,7 +166,7 @@
           (while (search-forward from-string nil t)
             (unless (< end (point))
               (incf count)
-              (replace-match from-string nil t)
+              (replace-match to-string nil t)
               (unless (< end (point))
                 (setq current (point))))))
       (goto-char (point-min))
