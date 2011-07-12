@@ -17,7 +17,7 @@
 ;; along with this program; if not, write to the Free Software
 ;; Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
-;; Version: 0.8.2
+;; Version: 0.8.3
 ;; Author: k1LoW (Kenichirou Oyama), <k1lowxb [at] gmail [dot] com> <k1low [at] 101000lab [dot] org>
 ;; Maintainer: k1LoW (Kenichirou Oyama), <k1lowxb [at] gmail [dot] com> <k1low [at] 101000lab [dot] org>
 ;;             kitokitoki, <mori.dev.asdf [at] gmail [dot] com>
@@ -91,7 +91,10 @@
     (action
      ("Smart Replace" . anything-smart-replace-action)
      ("Replace String" . anything-replace-string-action)
-     ("Query Replace" . anything-query-replace-action))
+     ("Query Replace" . anything-query-replace-action)
+     ("Smart Replace Reverse" . anything-smart-replace-reverse-action)
+     ("Replace String Reverse" . anything-replace-string-reverse-action)
+     ("Query Replace Reverse" . anything-query-replace-reverse-action))
     (migemo)
     (multiline)))
 
@@ -133,6 +136,40 @@
         do (if (equal (concat (car x) anything-replace-string-separator (cadr x)) candidate)
                (progn
                  (anything-query-replace-region x)
+                 (setq match t)
+                 (return nil)))))
+
+(defun anything-smart-replace-reverse-action (candidate)
+  (loop with match = nil
+        until match
+        for x in anything-replace-string-history
+        do (if (equal (concat (car x) anything-replace-string-separator (cadr x)) candidate)
+               (progn
+                 (cond ((equal 'replace-string (caddr x)) (anything-replace-string-region (list (cadr x) (car x) (caddr x))))
+                       ((equal 'query-string (caddr x)) (anything-query-replace-region (list (cadr x) (car x) (caddr x))))
+                       (t (anything-replace-string-region x)))
+                 (setq match t)
+                 (return nil)))))
+
+(defun anything-replace-string-reverse-action (candidate)
+  (message "replace")
+  (loop with match = nil
+        until match
+        for x in anything-replace-string-history
+        do (if (equal (concat (car x) anything-replace-string-separator (cadr x)) candidate)
+               (progn
+                 (anything-replace-string-region (list (cadr x) (car x) (caddr x)))
+                 (setq match t)
+                 (return nil)))))
+
+(defun anything-query-replace-reverse-action (candidate)
+  (message "query")
+  (loop with match = nil
+        until match
+        for x in anything-replace-string-history
+        do (if (equal (concat (car x) anything-replace-string-separator (cadr x)) candidate)
+               (progn
+                 (anything-query-replace-region (list (cadr x) (car x) (caddr x)))
                  (setq match t)
                  (return nil)))))
 
