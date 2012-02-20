@@ -17,7 +17,7 @@
 ;; along with this program; if not, write to the Free Software
 ;; Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
-;; Version: 0.9.0
+;; Version: 0.9.1
 ;; Author: k1LoW (Kenichirou Oyama), <k1lowxb [at] gmail [dot] com> <k1low [at] 101000lab [dot] org>
 ;; Maintainer: k1LoW (Kenichirou Oyama), <k1lowxb [at] gmail [dot] com> <k1low [at] 101000lab [dot] org>
 ;;             kitokitoki, <mori.dev.asdf [at] gmail [dot] com>
@@ -92,12 +92,15 @@
      ("[L -> R] Smart Replace" . anything-smart-replace-action)
      ("[R -> L] Smart Replace Reverse" . anything-smart-replace-reverse-action)
      ("[L -> New] Smart Replace From Left String" . anything-smart-replace-from-left-action)
+     ("[R -> New] Smart Replace From Right String" . anything-smart-replace-from-right-action)
      ("[L -> R] Replace String" . anything-replace-string-action)
      ("[L -> R] Query Replace" . anything-query-replace-action)
      ("[R -> L] Replace String Reverse" . anything-replace-string-reverse-action)
      ("[R -> L] Query Replace Reverse" . anything-query-replace-reverse-action)
      ("[L -> New] Replace String From Left String" . anything-replace-string-from-left-action)
-     ("[L -> New] Query Replace From Left String" . anything-query-replace-from-left-action))
+     ("[L -> New] Query Replace From Left String" . anything-query-replace-from-left-action)
+     ("[R -> New] Replace String From Right String" . anything-replace-string-from-right-action)
+     ("[R -> New] Query Replace From Right String" . anything-query-replace-from-right-action))
     (migemo)
     (multiline)))
 
@@ -151,7 +154,7 @@
                  (progn
                    (cond ((equal 'replace-string type) (anything-replace-string-dummy-action left-string))
                          ((equal 'query-string type) (anything-query-replace-dummy-action left-string))
-                         (t (anything-replace-string-region x)))
+                         (t (anything-replace-string-dummy-action left-string)))
                    (setq match t)
                    (return nil))))))
 
@@ -179,6 +182,43 @@
                  (setq match t)
                  (return nil))))))
 
+(defun anything-smart-replace-from-right-action (candidate)
+  (loop with match = nil
+        until match
+        for x in anything-replace-string-history
+        do (let* ((left-string (car x)) (right-string (cadr x)) (type (caddr x)))
+             (if (equal (concat left-string anything-replace-string-separator right-string) candidate)
+                 (progn
+                   (cond ((equal 'replace-string type) (anything-replace-string-dummy-action right-string))
+                         ((equal 'query-string type) (anything-query-replace-dummy-action right-string))
+                         (t (anything-replace-string-dummy-action right-string)))
+                   (setq match t)
+                   (return nil))))))
+
+(defun anything-replace-string-from-right-action (candidate)
+  (message "replace")
+  (loop with match = nil
+        until match
+        for x in anything-replace-string-history
+        do (let* ((left-string (car x)) (right-string (cadr x)) (type (caddr x)))
+             (if (equal (concat left-string anything-replace-string-separator right-string) candidate)
+               (progn
+                 (anything-replace-string-dummy-action right-string)
+                 (setq match t)
+                 (return nil))))))
+
+(defun anything-query-replace-from-right-action (candidate)
+  (message "query")
+  (loop with match = nil
+        until match
+        for x in anything-replace-string-history
+        do (let* ((left-string (car x)) (right-string (cadr x)) (type (caddr x)))
+             (if (equal (concat left-string anything-replace-string-separator right-string) candidate)
+               (progn
+                 (anything-query-replace-dummy-action right-string)
+                 (setq match t)
+                 (return nil))))))
+
 (defun anything-smart-replace-reverse-action (candidate)
   (loop with match = nil
         until match
@@ -187,7 +227,7 @@
                (progn
                  (cond ((equal 'replace-string (caddr x)) (anything-replace-string-region (list (cadr x) (car x) (caddr x))))
                        ((equal 'query-string (caddr x)) (anything-query-replace-region (list (cadr x) (car x) (caddr x))))
-                       (t (anything-replace-string-region x)))
+                       (t (anything-replace-string-region (list (cadr x) (car x) (caddr x)))))
                  (setq match t)
                  (return nil)))))
 
