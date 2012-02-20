@@ -1,7 +1,7 @@
 ;;; anything-replace-string.el --- `replace-string' and `query-replace' `anything.el' interface
 ;; -*- Mode: Emacs-Lisp -*-
 
-;; Copyright (C) 2011 by 101000code/101000LAB
+;; Copyright (C) 2011-2012 by 101000code/101000LAB
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 ;; along with this program; if not, write to the Free Software
 ;; Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
-;; Version: 0.8.3
+;; Version: 0.9.0
 ;; Author: k1LoW (Kenichirou Oyama), <k1lowxb [at] gmail [dot] com> <k1low [at] 101000lab [dot] org>
 ;; Maintainer: k1LoW (Kenichirou Oyama), <k1lowxb [at] gmail [dot] com> <k1low [at] 101000lab [dot] org>
 ;;             kitokitoki, <mori.dev.asdf [at] gmail [dot] com>
@@ -89,12 +89,15 @@
   '((name . "Replace string from history")
     (candidates . anything-replace-string-history-candidates)
     (action
-     ("Smart Replace" . anything-smart-replace-action)
-     ("Replace String" . anything-replace-string-action)
-     ("Query Replace" . anything-query-replace-action)
-     ("Smart Replace Reverse" . anything-smart-replace-reverse-action)
-     ("Replace String Reverse" . anything-replace-string-reverse-action)
-     ("Query Replace Reverse" . anything-query-replace-reverse-action))
+     ("[L -> R] Smart Replace" . anything-smart-replace-action)
+     ("[R -> L] Smart Replace Reverse" . anything-smart-replace-reverse-action)
+     ("[L -> New] Smart Replace From Left String" . anything-smart-replace-from-left-action)
+     ("[L -> R] Replace String" . anything-replace-string-action)
+     ("[L -> R] Query Replace" . anything-query-replace-action)
+     ("[R -> L] Replace String Reverse" . anything-replace-string-reverse-action)
+     ("[R -> L] Query Replace Reverse" . anything-query-replace-reverse-action)
+     ("[L -> New] Replace String From Left String" . anything-replace-string-from-left-action)
+     ("[L -> New] Query Replace From Left String" . anything-query-replace-from-left-action))
     (migemo)
     (multiline)))
 
@@ -139,6 +142,43 @@
                  (setq match t)
                  (return nil)))))
 
+(defun anything-smart-replace-from-left-action (candidate)
+  (loop with match = nil
+        until match
+        for x in anything-replace-string-history
+        do (let* ((left-string (car x)) (right-string (cadr x)) (type (caddr x)))
+             (if (equal (concat left-string anything-replace-string-separator right-string) candidate)
+                 (progn
+                   (cond ((equal 'replace-string type) (anything-replace-string-dummy-action left-string))
+                         ((equal 'query-string type) (anything-query-replace-dummy-action left-string))
+                         (t (anything-replace-string-region x)))
+                   (setq match t)
+                   (return nil))))))
+
+(defun anything-replace-string-from-left-action (candidate)
+  (message "replace")
+  (loop with match = nil
+        until match
+        for x in anything-replace-string-history
+        do (let* ((left-string (car x)) (right-string (cadr x)) (type (caddr x)))
+             (if (equal (concat left-string anything-replace-string-separator right-string) candidate)
+               (progn
+                 (anything-replace-string-dummy-action left-string)
+                 (setq match t)
+                 (return nil))))))
+
+(defun anything-query-replace-from-left-action (candidate)
+  (message "query")
+  (loop with match = nil
+        until match
+        for x in anything-replace-string-history
+        do (let* ((left-string (car x)) (right-string (cadr x)) (type (caddr x)))
+             (if (equal (concat left-string anything-replace-string-separator right-string) candidate)
+               (progn
+                 (anything-query-replace-dummy-action left-string)
+                 (setq match t)
+                 (return nil))))))
+
 (defun anything-smart-replace-reverse-action (candidate)
   (loop with match = nil
         until match
@@ -174,20 +214,20 @@
                  (return nil)))))
 
 (defun anything-replace-string-dummy-action (candidate)
-  (let ((to-string candidate) (prompt "Replace string in region "))
+  (let ((from-string candidate) to-string (prompt "Replace string in region "))
     (unless (region-active-p)
       (setq prompt "Replace string "))
-    (setq to-string (read-string (concat prompt candidate " with: ")))
-    (anything-replace-string-push-history candidate to-string 'replace-string)
-    (anything-replace-string-region (list candidate to-string 'replace-string))))
+    (setq to-string (read-string (concat prompt from-string " with: ")))
+    (anything-replace-string-push-history from-string to-string 'replace-string)
+    (anything-replace-string-region (list from-string to-string 'replace-string))))
 
 (defun anything-query-replace-dummy-action (candidate)
-  (let ((to-string candidate) (prompt "Query Replace string in region "))
+  (let ((from-string candidate) to-string (prompt "Query Replace string in region "))
     (unless (region-active-p)
       (setq prompt "Query Replace string "))
-    (setq to-string (read-string (concat prompt candidate " with: ")))
-    (anything-replace-string-push-history candidate to-string 'query-string)
-    (anything-query-replace-region (list candidate to-string 'query-string))))
+    (setq to-string (read-string (concat prompt from-string " with: ")))
+    (anything-replace-string-push-history from-string to-string 'query-string)
+    (anything-query-replace-region (list from-string to-string 'query-string))))
 
 (defun anything-replace-string-region (x)
   "Replace string."
