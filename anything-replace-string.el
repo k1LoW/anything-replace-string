@@ -1,7 +1,7 @@
 ;;; anything-replace-string.el --- `replace-string' and `query-replace' `anything.el' interface
 ;; -*- Mode: Emacs-Lisp -*-
 
-;; Copyright (C) 2011-2012 by 101000code/101000LAB
+;; Copyright (C) 2011-2014 by 101000code/101000LAB
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -17,11 +17,12 @@
 ;; along with this program; if not, write to the Free Software
 ;; Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
-;; Version: 0.9.1
+;; Version: 0.9.2
 ;; Author: k1LoW (Kenichirou Oyama), <k1lowxb [at] gmail [dot] com> <k1low [at] 101000lab [dot] org>
 ;; Maintainer: k1LoW (Kenichirou Oyama), <k1lowxb [at] gmail [dot] com> <k1low [at] 101000lab [dot] org>
 ;;             kitokitoki, <mori.dev.asdf [at] gmail [dot] com>
 ;; URL: http://code.101000lab.org
+;; Package-Requires: ((anything "1.3.9"))
 
 ;;; Install
 ;; Put this file into load-path'ed directory, and byte compile it if
